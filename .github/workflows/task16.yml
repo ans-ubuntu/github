@@ -33,4 +33,4 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           inventory: |
             [all]
-            ${{ secrets.REMOTE_HOST }} ansible_ssh_port=${{ secrets.SSH_PORT }} ansible_ssh_user=${{ secrets.REMOTE_USER }} ansible_become_password=${{ secrets.SSH_BECOME_PASSWD }} ${{ PRIVATE_KEY_FILE }}
+            ${{ secrets.REMOTE_HOST }} ansible_ssh_port=${{ secrets.SSH_PORT }} ansible_ssh_user=${{ secrets.REMOTE_USER }} ansible_become_password=${{ secrets.SSH_BECOME_PASSWD }} ansible_ssh_private_key_file=${{ PRIVATE_KEY_FILE }}

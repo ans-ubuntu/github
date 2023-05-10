@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web UI client</title>
+</head>
+<body>
+    <h1>Web UI client</h1>
+    <form>
+        <label for="url">API Endpoint URL:</label>
+        <input type="text" id="url" name="url" value="/api"><br><br>
+        <label for="name">Your Name:</label>
+        <input type="text" id="name" name="name"><br><br>
+        <input type="button" value="Submit" onclick="submitForm()">
+    </form>
+    <br><br>
+    <label for="response">Server Response:</label>
+    <textarea id="response" name="response"></textarea>
+
+    <script>
+        function submitForm() {
+            // Get form inputs
+            const url = document.getElementById("url").value;
+            const name = document.getElementById("name").value;
+
+            // Send API request
+            fetch(url + "?name=" + name)
+                .then(response => response.text())
+                .then(data => {
+                    // Display server response
+                    document.getElementById("response").value = data;
+                })
+                .catch(error => console.error(error));
+        }
+    </script>
+</body>
+</html>
+

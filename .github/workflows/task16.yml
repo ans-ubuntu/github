@@ -1,4 +1,4 @@
-name: Ansible Docker Deployment to DigitalOcean with SSH Setup
+name: Ansible Docker Deployment to DigitalOcean 
 
 on:
   push:

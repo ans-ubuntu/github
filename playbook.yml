@@ -3,7 +3,7 @@
   hosts: 178.128.83.86
   become: yes
   vars:
-    image_name: web-ui:latest
+    image_name: webui:latest
     container_name: webui_container
     container_port: 8080
     host_port: 8080

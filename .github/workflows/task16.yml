@@ -44,4 +44,4 @@ jobs:
          echo "${{ secrets.REMOTE_HOST }}" > inventory
      - name: Run Ansible playbook
        run: |
-         ansible-playbook -i ${{ secrets.REMOTE_HOST }} playbook.yml
+         ansible-playbook -i inventory playbook.yml

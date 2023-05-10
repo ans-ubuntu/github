@@ -1,0 +1,41 @@
+name: Ansible Docker Deployment to DigitalOcean 
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+        
+    - name: Install Ansible
+      run: pip install ansible
+      
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh-keyscan -t ed25519 "${{ secrets.REMOTE_HOST }}" >> ~/.ssh/known_hosts
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+      
+    - name: Prepare inventory
+      run: echo "${{ secrets.REMOTE_HOST }}" > inventory
+      
+    - name: Run Ansible playbook
+      run: ansible-playbook -i inventory playbook.yml 
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: False
+        DO_API_TOKEN: ${{ secrets.DO_API_TOKEN }}
+        REMOTE_USER: ${{ secrets.REMOTE_USER }}

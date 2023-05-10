@@ -1,4 +1,4 @@
-name: Ansible Docker Deployment to DigitalOcean
+name: Ansible Docker Deployment to DigitalOcean with SSH Setup
 
 on:
   push:
@@ -20,6 +20,16 @@ jobs:
     - name: Install Ansible
       run: pip install ansible
       
+    - name: Setup SSH
+      run: |
+        mkdir -p ~/.ssh/
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -t rsa "${{ secrets.REMOTE_HOST }}" >> ~/.ssh/known_hosts
+      env:
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+      
     - name: Prepare inventory
       run: echo "${{ secrets.REMOTE_HOST }}" > inventory
       
@@ -28,5 +38,3 @@ jobs:
       env:
         ANSIBLE_HOST_KEY_CHECKING: False
         DO_API_TOKEN: ${{ secrets.DO_API_TOKEN }}
-
-

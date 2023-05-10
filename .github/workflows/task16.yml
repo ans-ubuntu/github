@@ -27,7 +27,7 @@ jobs:
        uses: docker/build-push-action@v4
        with:
           push: true
-          tags: deatend/web-ui:latest
+          tags: deatend/webui:latest
      - name: Checkout code
        uses: actions/checkout@v2
 

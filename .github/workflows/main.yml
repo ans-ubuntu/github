@@ -28,7 +28,9 @@ jobs:
         echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan "${REMOTE_HOST}" >> ~/.ssh/known_hosts
-
+    
+    - name: Prepare inventory
+      run: echo "${{ secrets.REMOTE_HOST }}" > inventory
     - name: Run Ansible playbook
-      run: ansible-playbook -i hosts playbook.yml
+      run: ansible-playbook -i inventory playbook.yml
 

@@ -30,7 +30,7 @@ jobs:
         ssh-keyscan "${REMOTE_HOST}" >> ~/.ssh/known_hosts
     
     - name: Prepare inventory
-      run: echo "${{ secrets.REMOTE_HOST }}" > inventory
+      run: echo "${{ secrets.REMOTE_HOST }}" "${{ secrets.REMOTE_USER }}"> inventory
     - name: Run Ansible playbook
       run: ansible-playbook -i inventory playbook.yml
 

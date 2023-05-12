@@ -1,6 +1,6 @@
 ---
 - name: Run Docker container
-  hosts: 178.128.83.86
+  hosts: remote_host
   become: yes
   vars:
     image_name: webui:latest

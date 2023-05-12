@@ -1,8 +1,0 @@
-all:
-  hosts:
-    remote_host:
-      ansible_host: 178.128.83.86
-      ansible_user: ans
-      ansible_become: yes
-      ansible_become_method: sudo
-      ansible_become_password: ${{ ANSIBLE_BECOME_PASSWORD }}

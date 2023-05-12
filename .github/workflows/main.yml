@@ -34,7 +34,7 @@ jobs:
     - name: Run Ansible playbook
       env:
         ANSIBLE_BECOME_PASSWORD: ${{ secrets.ANSIBLE_BECOME_PASSWORD }}
-      run: ansible-playbook -i inventory.yml playbook.yml
+      run: ansible-playbook -i inventory.ini playbook.yml
 
 
   

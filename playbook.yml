@@ -1,4 +1,40 @@
 ---
+- name: Deploy Web UI container
+  hosts: remote_host
+  become: yes
+  tasks:
+    - name: Ensure Docker is installed
+      ansible.builtin.package:
+        name: docker
+        state: present
+
+    - name: Ensure Docker is running
+      ansible.builtin.systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Deploy WebUI container
+      docker_container:
+        name: api
+        image: deatend/webui:latest
+        state: started
+        recreate: yes
+        ports:
+          - "8080:8080"
+
+
+
+
+
+
+
+
+
+
+
+
+
 - name: Run Docker container
   hosts: remote_host
   become: yes
@@ -8,16 +44,4 @@
     container_name: webui_container
     container_port: 8080
     host_port: 8080
-  tasks:
-    - name: Pull Docker image
-      docker_image:
-        name: "{{ image_name }}"
-        source: pull
-
-    - name: Run Docker container
-      docker_container:
-        name: "{{ container_name }}"
-        image: "{{ image_name }}"
-        ports:
-          - "{{ host_port }}:{{ container_port }}"
-        state: started
+  

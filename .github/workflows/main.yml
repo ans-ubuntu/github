@@ -31,8 +31,11 @@ jobs:
     - name: Clone the repository
       uses: actions/checkout@v2
 
-    - name: Run Ansible playbook.yml
+    - name: Run Ansible playbook
+      env:
+        ANSIBLE_BECOME_PASSWORD: ${{ secrets.ANSIBLE_BECOME_PASSWORD }}
       run: ansible-playbook -i inventory.yml playbook.yml
+
 
   
 

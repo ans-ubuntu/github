@@ -1,4 +1,4 @@
-name: Deploy to Digital Ocean
+name: Deploy Ansible playbook to Digital Ocean
 
 on:
   push:

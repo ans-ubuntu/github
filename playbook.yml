@@ -2,6 +2,7 @@
 - name: Run Docker container
   hosts: remote_host
   become: yes
+  become_pass: "{{ lookup('env','ANSIBLE_BECOME_PASSWORD') }}"
   vars:
     image_name: webui:latest
     container_name: webui_container

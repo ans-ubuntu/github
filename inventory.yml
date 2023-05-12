@@ -5,4 +5,4 @@ all:
       ansible_user: ans
       ansible_become: yes
       ansible_become_method: sudo
-      ansible_become_password: ${{ SSH_BECOME_PASSWD }}
+      ansible_become_password: ${{ ANSIBLE_BECOME_PASSWORD }}

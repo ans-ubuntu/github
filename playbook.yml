@@ -3,17 +3,6 @@
   hosts: remote_host
   become: yes
   tasks:
-    - name: Ensure Docker is installed
-      ansible.builtin.package:
-        name: docker
-        state: present
-
-    - name: Ensure Docker is running
-      ansible.builtin.systemd:
-        name: docker
-        state: started
-        enabled: yes
-
     - name: Deploy WebUI container
       docker_container:
         name: webui

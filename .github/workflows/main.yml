@@ -27,10 +27,9 @@ jobs:
         mkdir -p ~/.ssh
         echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_ed25519
         chmod 600 ~/.ssh/id_ed25519
-        ssh-keyscan -t ed25519 "${REMOTE_HOST}" >> ~/.ssh/known_hosts
     
     - name: Prepare inventory
-      run: echo "${{ secrets.REMOTE_HOST }}" "${{ secrets.REMOTE_USER }}"> inventory
+      run: echo "${{ secrets.REMOTE_HOST }}" "${{ secrets.REMOTE_USER }}" > inventory
     - name: Run Ansible playbook
       run: ansible-playbook -i inventory playbook.yml
 

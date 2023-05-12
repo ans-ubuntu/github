@@ -16,7 +16,7 @@
 
     - name: Deploy WebUI container
       docker_container:
-        name: api
+        name: webui
         image: deatend/webui:latest
         state: started
         recreate: yes

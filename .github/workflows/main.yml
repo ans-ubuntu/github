@@ -27,9 +27,14 @@ jobs:
         mkdir -p ~/.ssh
         echo "${SSH_PRIVATE_KEY}" > ~/.ssh/id_ed25519
         chmod 600 ~/.ssh/id_ed25519
-    
-    - name: Prepare inventory
-      run: echo "${{ secrets.REMOTE_HOST }}" "${{ secrets.REMOTE_USER }}" > inventory
+   
+    - name: Clone the repository
+      uses: actions/checkout@v2
+
     - name: Run Ansible playbook
-      run: ansible-playbook -i inventory playbook.yml
+      env:
+        ANSIBLE_BECOME_PASSWORD: ${{ secrets.ANSIBLE_BECOME_PASSWORD }}
+      run: ansible-playbook -i inventory.yml playbook.yml
+
+  
 

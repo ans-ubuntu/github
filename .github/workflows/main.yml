@@ -1,29 +1,140 @@
-name: Deploy Ansible playbook to Digital Ocean
+name: Build and push images for all components (CI)
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+
+permissions:
+  contents: "read"
+  id-token: "write"
 
 jobs:
-  build_and_push:
-    runs-on: ubuntu-latest
-
+  run-ci:
+    runs-on: [ self-hosted, e2e_ubuntu ]
     steps:
-    
       - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Login to Docker Hub
-        uses: docker/login-action@v1
+        uses: actions/checkout@v3
         with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASSWD }}
+          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          fetch-depth: 0
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v2
+      - name: Set registry and tag values
+        id: vars
+        run: |
+          echo "::set-output name=registry_immutable::registry.dev.bildungsraum.de/nbpdr"
+          echo "::set-output name=tag_immutable::${{ github.run_number }}"
+          echo "::set-output name=registry_mutable::registry.dev.bildungsraum.de/nbp"
+          echo "::set-output name=tag_mutable::latest"
+
+      - name: Login to Nexus Immutable Repository
+        uses: docker/login-action@v2
         with:
-          context: .
-          push: true
-          tags: deatend/ansible:doc
+          registry: ${{ steps.vars.outputs.registry_immutable }}
+          username: ${{ secrets.NEXUS_USER }}
+          password: ${{ secrets.NEXUS_PASSWORD }}
+  
+      - name: Login to Nexus Mutable Repository
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ steps.vars.outputs.registry_mutable }}
+          username: ${{ secrets.NEXUS_USER }}
+          password: ${{ secrets.NEXUS_PASSWORD }}
 
- 
+      - name: School Backend
+        run: |
+          mvn clean install
+          docker build -t tmp -f DockerfileSchool .
+          docker tag tmp ${{ steps.vars.outputs.registry_immutable }}/integration/integration-school-backend:${{ steps.vars.outputs.tag_immutable }}
+          docker tag tmp ${{ steps.vars.outputs.registry_mutable }}/integration/integration-school-backend:${{ steps.vars.outputs.tag_mutable }}
+          docker push ${{ steps.vars.outputs.registry_immutable }}/integration/integration-school-backend:${{ steps.vars.outputs.tag_immutable }}
+          docker push ${{ steps.vars.outputs.registry_mutable }}/integration/integration-school-backend:${{ steps.vars.outputs.tag_mutable }}
+          docker rmi ${{ steps.vars.outputs.registry_immutable }}/integration/integration-school-backend:${{ steps.vars.outputs.tag_immutable }} --force
+          docker rmi ${{ steps.vars.outputs.registry_mutable }}/integration/integration-school-backend:${{ steps.vars.outputs.tag_mutable }} --force
+          docker rmi tmp --force
+          docker images
+
+      - name: School Frontend
+        run: |
+          cd ./school-react-app
+          docker build -t tmp -f Dockerfile .
+          docker tag tmp ${{ steps.vars.outputs.registry_immutable }}/integration/integration-school-react-app:${{ steps.vars.outputs.tag_immutable }}
+          docker tag tmp ${{ steps.vars.outputs.registry_mutable }}/integration/integration-school-react-app:${{ steps.vars.outputs.tag_mutable }}
+          docker images 
+          docker push ${{ steps.vars.outputs.registry_immutable }}/integration/integration-school-react-app:${{ steps.vars.outputs.tag_immutable }}
+          docker push ${{ steps.vars.outputs.registry_mutable }}/integration/integration-school-react-app:${{ steps.vars.outputs.tag_mutable }}
+          docker rmi ${{ steps.vars.outputs.registry_immutable }}/integration/integration-school-react-app:${{ steps.vars.outputs.tag_immutable }} --force
+          docker rmi ${{ steps.vars.outputs.registry_mutable }}/integration/integration-school-react-app:${{ steps.vars.outputs.tag_mutable }} --force
+          docker rmi tmp --force
+          docker images
+
+      - name: University Backend
+        run: |
+          mvn clean install
+          docker build -t tmp -f DockerfileUniversity .
+          docker tag tmp ${{ steps.vars.outputs.registry_immutable }}/integration/integration-university-backend:${{ steps.vars.outputs.tag_immutable }}
+          docker tag tmp ${{ steps.vars.outputs.registry_mutable }}/integration/integration-university-backend:${{ steps.vars.outputs.tag_mutable }}
+          docker push ${{ steps.vars.outputs.registry_immutable }}/integration/integration-university-backend:${{ steps.vars.outputs.tag_immutable }}
+          docker push ${{ steps.vars.outputs.registry_mutable }}/integration/integration-university-backend:${{ steps.vars.outputs.tag_mutable }}
+          docker rmi ${{ steps.vars.outputs.registry_immutable }}/integration/integration-university-backend:${{ steps.vars.outputs.tag_immutable }} --force
+          docker rmi ${{ steps.vars.outputs.registry_mutable }}/integration/integration-university-backend:${{ steps.vars.outputs.tag_mutable }} --force
+          docker rmi tmp --force
+          docker images
+
+
+      - name: University Frontend
+        run: |
+          cd ./university-react-app
+          docker build -t tmp -f Dockerfile .
+          docker tag tmp ${{ steps.vars.outputs.registry_immutable }}/integration/integration-university-react-app:${{ steps.vars.outputs.tag_immutable }}
+          docker tag tmp ${{ steps.vars.outputs.registry_mutable }}/integration/integration-university-react-app:${{ steps.vars.outputs.tag_mutable }}
+          docker images 
+          docker push ${{ steps.vars.outputs.registry_immutable }}/integration/integration-university-react-app:${{ steps.vars.outputs.tag_immutable }}
+          docker push ${{ steps.vars.outputs.registry_mutable }}/integration/integration-university-react-app:${{ steps.vars.outputs.tag_mutable }}
+          docker rmi ${{ steps.vars.outputs.registry_immutable }}/integration/integration-university-react-app:${{ steps.vars.outputs.tag_immutable }} --force
+          docker rmi ${{ steps.vars.outputs.registry_mutable }}/integration/integration-university-react-app:${{ steps.vars.outputs.tag_mutable }} --force
+          docker rmi tmp --force
+          docker images
+
+      - name: Education Backend
+        run: |
+          mvn clean install
+          docker build -t tmp -f DockerfileEducation .
+          docker tag tmp ${{ steps.vars.outputs.registry_immutable }}/integration/integration-education-backend:${{ steps.vars.outputs.tag_immutable }}
+          docker tag tmp ${{ steps.vars.outputs.registry_mutable }}/integration/integration-education-backend:${{ steps.vars.outputs.tag_mutable }}
+          docker push ${{ steps.vars.outputs.registry_immutable }}/integration/integration-education-backend:${{ steps.vars.outputs.tag_immutable }}
+          docker push ${{ steps.vars.outputs.registry_mutable }}/integration/integration-education-backend:${{ steps.vars.outputs.tag_mutable }}
+          docker rmi ${{ steps.vars.outputs.registry_immutable }}/integration/integration-education-backend:${{ steps.vars.outputs.tag_immutable }} --force
+          docker rmi ${{ steps.vars.outputs.registry_mutable }}/integration/integration-education-backend:${{ steps.vars.outputs.tag_mutable }} --force
+          docker rmi tmp --force
+          docker images
+
+      - name: Education Frontend
+        run: |
+          cd ./education-react-app
+          docker build -t tmp -f Dockerfile .
+          docker tag tmp ${{ steps.vars.outputs.registry_immutable }}/integration/integration-education-react-app:${{ steps.vars.outputs.tag_immutable }}
+          docker tag tmp ${{ steps.vars.outputs.registry_mutable }}/integration/integration-education-react-app:${{ steps.vars.outputs.tag_mutable }}
+          docker images 
+          docker push ${{ steps.vars.outputs.registry_immutable }}/integration/integration-education-react-app:${{ steps.vars.outputs.tag_immutable }}
+          docker push ${{ steps.vars.outputs.registry_mutable }}/integration/integration-education-react-app:${{ steps.vars.outputs.tag_mutable }}
+          docker rmi ${{ steps.vars.outputs.registry_immutable }}/integration/integration-education-react-app:${{ steps.vars.outputs.tag_immutable }} --force
+          docker rmi ${{ steps.vars.outputs.registry_mutable }}/integration/integration-education-react-app:${{ steps.vars.outputs.tag_mutable }} --force
+          docker rmi tmp --force
+          docker images
+
+      - name: Adjust values.demo.yaml files
+        run: |
+          .devops/scripts/adjust_values.py --target-path ./education-backend ./education-react-app ./school-backend ./school-react-app ./university-backend ./university-react-app --target-file values.demo.yaml --target-tag ${{ github.run_number }}
+
+      - name: Commit and push changes
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          if git diff --cached --quiet
+          then
+            echo "No changes detected"
+          else
+            git commit -m "Modify files via GitHub Actions"
+            git pull
+            git push
+          fi
